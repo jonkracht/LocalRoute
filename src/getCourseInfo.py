@@ -82,7 +82,7 @@ def get_course_info(base_url):
     
 
     # Wooded-ness: find string "Wooded" in html
-    key = 'Woodedness'
+    key = 'Terrain'
     try:
         course_info[key] = html.find(class_='c-course-stat-label', string=re.compile('Wooded')).text
     except:
@@ -91,6 +91,7 @@ def get_course_info(base_url):
     # Terrain:  Values of Mostly Flat, Moderately Hilly, Very Hilly
     key = 'Terrain'
     try:
+        # Search for string 'Flat'
         isFlat = html.find(string=re.compile('Flat'))
         if isFlat:
             course_info[key] = isFlat
@@ -99,6 +100,35 @@ def get_course_info(base_url):
     except:
         course_info[key] = missing_value
 
+    # Link:  Course homepage
+    key = 'Links'
+    course_info[key] = [tag.find_parent()['href'] for tag in html.find_all(class_='fas fa-link')]
+
+    # Extinct:  Button below course name indicating if course is no longer open
+    key = 'Extinct'
+    course_info[key] = len(html.find_all(class_='c-course _extinct'))
+
+    # Local directions to navigate to course
+    key = 'Local Directions'
+    course_info[key] = html.find(string='Local Directions:').find_next().text
+
+    # Rounds recorded and average score(s)
+    key = 'Rounds Recorded & Average Score'
+
+    tag = html.find(string='Rounds Recorded / Average Score:').find_parent().find_next()
+    try:
+        dict = {}
+        dict['Total'] = tag.find('a').text
+        
+        for t in tag.find_all(class_='c-bullet'):
+            layout_color = t.next_element['style'].split(':')[-1][:-1]
+            layout_results = t.text
+            dict[layout_color] = layout_results
+
+        course_info[key] = dict
+    
+    except:
+        course_info[key] = {}
 
     return course_info
 
@@ -115,7 +145,7 @@ if __name__ == '__main__':
 
     course_data = get_course_info(base_url + course_id)
     
-    print("\nScraped data:")
+    print("\nScraped data:\n")
     for key, value in course_data.items():
         print(f"{key:<25} {value}")
 
