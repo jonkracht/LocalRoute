@@ -1,20 +1,22 @@
 import getCourseInfo
 import json
+from datetime import datetime
 
-base_url = 'https://www.dgcoursereview.com/course.php?id='
-
+base_url = "https://www.dgcoursereview.com/course.php?id="
+course_ids = range(1, 15242 +)
 
 dict = {}
-for i in range(1, 100):
-    print(i)
-    url = base_url + str(i)
+
+for id in course_ids:
+    print(id)
+    url = base_url + str(id)
 
     try:
-        dict[int(i)] = getCourseInfo.get_course_info(url)
+        dict[int(id)] = getCourseInfo.get_course_info(url)
     except:
-        dict[int(i)] = {}
+        dict[int(id)] = {}
 
 # Save data
-with open('data/raw/database.json', 'w') as f:
+date = datetime.today().strftime("%Y-%m-%d")
+with open("data/raw/database-" + date + ".json", "w") as f:
     f.write(json.dumps(dict))
-
