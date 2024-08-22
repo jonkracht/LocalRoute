@@ -44,13 +44,20 @@ def get_course_info(base_url):
             course_info[d] = {}
 
     # Pull out some other info peppered throughout page
-    keys = ["Year established", "Designer", "Multiple Tees / Pins", "Tee Type", "Hole Type"]
+    keys = ["Year established", "Multiple Tees / Pins", "Tee Type", "Hole Type"]
 
     for key in keys:
         try:
             course_info[key] = html.find(string=re.compile(key)).find_parent().find_next().text
         except:
             course_info[key] = missing_value
+
+    # Course designer
+    key = "Designer"
+    try:
+        course_info[key] = html.find(class_="c-course-details").find(string=re.compile("Designer")).find_parent().find_next().text
+    except:
+        course_info[key] =  missing_value
 
     #  Parameters where value is listed before key
     for key in ["Water in play", "Baskets", "Holes"]:
@@ -155,6 +162,13 @@ def get_course_info(base_url):
 
     except:
         course_info[key] = {}
+
+    # Course type: permanent, seasonal, temporary, practice
+    key = "course_type"
+    try:
+        course_info[key] = html.find(class_ = "c-course-info-type").text.split()[0]
+    except:
+        course_info[key] = missing_value
 
     return course_info
 
