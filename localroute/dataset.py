@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 base_url = "https://www.dgcoursereview.com/course.php?id="
-course_ids = range(1, 15242 +)
+course_ids = range(1, 15361 + 1)
 
 dict = {}
 
